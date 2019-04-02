@@ -445,3 +445,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# root@9c8a1de186c4:~/collect_rocm_env# grep MIOPEN_VERSION_MAJOR /opt/rocm/miopen/include/miopen/version.h -A 2
+# #define MIOPEN_VERSION_MAJOR 1
+# #define MIOPEN_VERSION_MINOR 7
+# #define MIOPEN_VERSION_PATCH 1
