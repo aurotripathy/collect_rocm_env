@@ -1,5 +1,8 @@
 # This script outputs relevant system environment info
-# Run it with `python collect_env.py`.
+# Its inspired by PyTorch's own environment collection tool:
+# https://raw.githubusercontent.com/pytorch/pytorch/master/torch/utils/collect_env.py
+# Run it with `python collect_rocm_env.py`.
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
 import subprocess
