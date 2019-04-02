@@ -11,6 +11,7 @@ try:
     import torch
     TORCH_AVAILABLE = True
 except (ImportError, NameError, AttributeError):
+    print("'import torch' gave an import error")
     TORCH_AVAILABLE = False
 
 PY3 = sys.version_info >= (3, 0)
@@ -36,7 +37,9 @@ PY3 = sys.version_info >= (3, 0)
 
 
 SystemEnv = namedtuple('SystemEnv', [
+    'torch_version',
     'rocm_version',
+    'os',
 ])
 
 
@@ -285,6 +288,8 @@ def get_env_info():
     # )
 
     return SystemEnv(
+        torch_version=version_str,
+        os=get_os(run_lambda),
         rocm_version=get_rocm_version(run_lambda),
     )
 
@@ -310,6 +315,8 @@ def get_env_info():
 # """.strip()
 
 env_info_fmt = """
+PyTorch version: {torch_version}
+OS: {os}
 ROCm version: {rocm_version}
 """.strip()
 
