@@ -9,7 +9,7 @@ import subprocess
 import sys
 import os
 from collections import namedtuple
-
+from pudb import set_trace
 try:
     import torch
     TORCH_AVAILABLE = True
@@ -43,6 +43,7 @@ SystemEnv = namedtuple('SystemEnv', [
     'torch_version',
     'rocm_version',
     'os',
+    'miopen_version',
 ])
 
 
@@ -74,6 +75,7 @@ def run_and_parse_first_match(run_lambda, command, regex):
     match = re.search(regex, out)
     if match is None:
         return None
+    set_trace()
     return match.group(1)
 
 
@@ -101,6 +103,15 @@ def get_cmake_version(run_lambda):
 def get_rocm_version(run_lambda):
     return run_and_parse_first_match(run_lambda, 'apt show rocm-libs', r'Version(.*)')
 
+def get_miopen_version(run_lambda):
+    miopen_str = run_and_parse_first_match(run_lambda,
+                                     'grep MIOPEN_VERSION_MAJOR /opt/rocm/miopen/include/miopen/version.h -A 2',
+                                    r'((?s).*)')
+    miopen_str = miopen_str.replace('\n','')
+    print('MIOpen string') 
+    print(miopen_str)
+    return miopen_str
+    
 
 def get_nvidia_driver_version(run_lambda):
     if get_platform() == 'darwin':
@@ -294,6 +305,7 @@ def get_env_info():
         torch_version=version_str,
         os=get_os(run_lambda),
         rocm_version=get_rocm_version(run_lambda),
+        miopen_version=get_miopen_version(run_lambda),
     )
 
 # env_info_fmt = """
@@ -321,6 +333,7 @@ env_info_fmt = """
 PyTorch version: {torch_version}
 OS: {os}
 ROCm version: {rocm_version}
+MIOpen version: {miopen_version}
 """.strip()
 
 
