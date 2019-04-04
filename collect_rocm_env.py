@@ -1,4 +1,4 @@
-# This script outputs relevant system environment info
+# This script outputs system environment info pertaining to ROCm
 # Its inspired by PyTorch's own environment collection tool:
 # https://raw.githubusercontent.com/pytorch/pytorch/master/torch/utils/collect_env.py
 # Run it with `python collect_rocm_env.py`.
@@ -106,11 +106,11 @@ def get_rocm_version(run_lambda):
 def get_miopen_version(run_lambda):
     miopen_str = run_and_parse_first_match(run_lambda,
                                      'grep MIOPEN_VERSION_MAJOR /opt/rocm/miopen/include/miopen/version.h -A 2',
-                                    r'((?s).*)')
-    miopen_str = miopen_str.replace('\n','')
-    print('MIOpen string') 
-    print(miopen_str)
-    return miopen_str
+                                    r'((?s).*)')  # consume the newline as well
+    miopen_str = miopen_str.replace('\n',' ')
+    miopen_version_list = miopen_str.split()
+    miopen_version = miopen_version_list[2] + '.' + miopen_version_list[5] + '.' + miopen_version_list[8] 
+    return miopen_version
     
 
 def get_nvidia_driver_version(run_lambda):
