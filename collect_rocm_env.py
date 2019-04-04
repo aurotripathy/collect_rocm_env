@@ -140,9 +140,9 @@ def get_vbios_versions(run_lambda):
                                           r'((?s).*)')
     lines = vbios_str.split('\n')
     total_gpus = len(lines) - 4
-    print('Total GPUs:', total_gpus)
-    return [line for line in lines[2 : 2 + total_gpus]]
-
+    buffer_1 = '\tTotal GPUs:{}\n'.format(total_gpus)
+    buffer_2 = ''.join(['\t{}\n'.format(line) for line in lines[2 : 2 + total_gpus]])
+    return buffer_1 + buffer_2
 
 
 def get_nvidia_driver_version(run_lambda):
@@ -365,7 +365,8 @@ def get_env_info():
 env_info_fmt = """
 PyTorch version: {torch_version}
 OS: {os}
-VBIOS version: {vbios_versions}
+VBIOS version: 
+{vbios_versions}
 ROCm version: {rocm_version}
 MIOpen version: {miopen_version}
 """.strip()
