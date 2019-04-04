@@ -44,6 +44,7 @@ SystemEnv = namedtuple('SystemEnv', [
     'rocm_version',
     'os',
     'miopen_version',
+    'vbios_versions',
 ])
 
 
@@ -79,6 +80,20 @@ def run_and_parse_first_match(run_lambda, command, regex):
     return match.group(1)
 
 
+def run_and_parse_many_matches(run_lambda, command, regex):
+    """Runs command using run_lambda, returns the first regex match if it exists"""
+    rc, out, _ = run_lambda(command)
+    if rc != 0:
+        return None
+    set_trace()
+    matches = re.search(regex, out)
+    print(matches)
+    if matches is None:
+        return None
+    set_trace()
+    return match.group(1)
+
+
 def get_conda_packages(run_lambda):
     if get_platform() == 'win32':
         grep_cmd = r'findstr /R "torch soumith mkl magma"'
@@ -104,6 +119,11 @@ def get_rocm_version(run_lambda):
     return run_and_parse_first_match(run_lambda, 'apt show rocm-libs', r'Version(.*)')
 
 def get_miopen_version(run_lambda):
+    """ finds and parses...
+    #define MIOPEN_VERSION_MAJOR 1
+    #define MIOPEN_VERSION_MINOR 7
+    #define MIOPEN_VERSION_PATCH 1
+    """
     miopen_str = run_and_parse_first_match(run_lambda,
                                      'grep MIOPEN_VERSION_MAJOR /opt/rocm/miopen/include/miopen/version.h -A 2',
                                     r'((?s).*)')  # consume the newline as well
@@ -111,7 +131,18 @@ def get_miopen_version(run_lambda):
     miopen_version_list = miopen_str.split()
     miopen_version = miopen_version_list[2] + '.' + miopen_version_list[5] + '.' + miopen_version_list[8] 
     return miopen_version
-    
+
+
+def get_vbios_versions(run_lambda):
+
+    miopen_str = run_and_parse_first_match(run_lambda,
+                                           '/opt/rocm/bin/rocm-smi -v',
+                                           r'(^(GPU(.*)))+')  # multi-line
+    miopen_str = miopen_str.replace('\n',' ')
+    miopen_version_list = miopen_str.split()
+    miopen_version = miopen_version_list[2] + '.' + miopen_version_list[5] + '.' + miopen_version_list[8] 
+    return miopen_version
+
 
 def get_nvidia_driver_version(run_lambda):
     if get_platform() == 'darwin':
@@ -306,6 +337,7 @@ def get_env_info():
         os=get_os(run_lambda),
         rocm_version=get_rocm_version(run_lambda),
         miopen_version=get_miopen_version(run_lambda),
+        vbios_versions=get_vbios_versions(run_lambda),
     )
 
 # env_info_fmt = """
@@ -332,6 +364,7 @@ def get_env_info():
 env_info_fmt = """
 PyTorch version: {torch_version}
 OS: {os}
+VBIOS version: {vbios_versions}
 ROCm version: {rocm_version}
 MIOpen version: {miopen_version}
 """.strip()
@@ -462,7 +495,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-# root@9c8a1de186c4:~/collect_rocm_env# grep MIOPEN_VERSION_MAJOR /opt/rocm/miopen/include/miopen/version.h -A 2
-# #define MIOPEN_VERSION_MAJOR 1
-# #define MIOPEN_VERSION_MINOR 7
-# #define MIOPEN_VERSION_PATCH 1
