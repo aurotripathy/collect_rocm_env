@@ -3,6 +3,7 @@ import subprocess
 import sys
 import os
 import re
+from pudb import set_trace
 
 def run(command):
     """Returns (return-code, stdout, stderr)"""
@@ -15,19 +16,29 @@ def run(command):
 
 def run_and_parse_first_match(run_lambda, command, regex):
     """Runs command using run_lambda, returns the first regex match if it exists"""
-    rc, out, _ = run_lambda(command)
+    rc, command_out, _ = run_lambda(command)
+    print('commmand out')
+    print(command_out)
     if rc != 0:
         return None
-    match = re.search(regex, out)
+    match = re.search(regex, command_out)
     if match is None:
         return None
-    # set_trace()
-    return match.group(1)
+    lines = match.group(1).split('\n')
+    total_gpus = len(lines) - 4
+    print('Total GPUs:', total_gpus)
+    set_trace()
+
+    print("needed lines")
+  
+    # print(lines[2 : 2 + total_gpus])
+    return [line for line in lines[2 : 2 + total_gpus]]
+    # return match
 
 run_lambda = run
 out = run_and_parse_first_match(run_lambda,
                                 '/opt/rocm/bin/rocm-smi -v',
-                                r'(^(GPU(.*)))+')
+                                r'((?s).*)')
 
 print(out)
 
