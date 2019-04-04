@@ -135,13 +135,14 @@ def get_miopen_version(run_lambda):
 
 def get_vbios_versions(run_lambda):
 
-    miopen_str = run_and_parse_first_match(run_lambda,
-                                           '/opt/rocm/bin/rocm-smi -v',
-                                           r'(^(GPU(.*)))+')  # multi-line
-    miopen_str = miopen_str.replace('\n',' ')
-    miopen_version_list = miopen_str.split()
-    miopen_version = miopen_version_list[2] + '.' + miopen_version_list[5] + '.' + miopen_version_list[8] 
-    return miopen_version
+    vbios_str = run_and_parse_first_match(run_lambda,
+                                          '/opt/rocm/bin/rocm-smi -v',
+                                          r'((?s).*)')
+    lines = vbios_str.split('\n')
+    total_gpus = len(lines) - 4
+    print('Total GPUs:', total_gpus)
+    return [line for line in lines[2 : 2 + total_gpus]]
+
 
 
 def get_nvidia_driver_version(run_lambda):
