@@ -9,7 +9,7 @@ import subprocess
 import sys
 import os
 from collections import namedtuple
-from pudb import set_trace
+# from pudb import set_trace
 try:
     import torch
     TORCH_AVAILABLE = True
@@ -76,7 +76,6 @@ def run_and_parse_first_match(run_lambda, command, regex):
     match = re.search(regex, out)
     if match is None:
         return None
-    set_trace()
     return match.group(1)
 
 
