@@ -1,4 +1,4 @@
-#### Collect ROCm environment parameters
+#### Collect ROCm Environment Parameters
 
 This script outputs system environment info pertaining to ROCm
 
