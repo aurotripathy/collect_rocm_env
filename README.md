@@ -7,7 +7,7 @@ https://raw.githubusercontent.com/pytorch/pytorch/master/torch/utils/collect_env
 
 Run it with `python collect_rocm_env.py`.
 
-The expected out put would be something like:
+The expected output would be something like:
 <code>
 root@prj47-rack-40:/collect_rocm_env# python3.6 collect_rocm_env.py
         
