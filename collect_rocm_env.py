@@ -45,6 +45,7 @@ SystemEnv = namedtuple('SystemEnv', [
     'os',
     'miopen_version',
     'vbios_versions',
+    'kernel_version',
 ])
 
 
@@ -143,6 +144,12 @@ def get_vbios_versions(run_lambda):
     buffer_2 = ''.join(['\t{}\n'.format(line) for line in lines[2 : 2 + total_gpus]])
     return buffer_1 + buffer_2
 
+
+def get_kernel_version(run_lambda):
+    return run_and_parse_first_match(run_lambda,
+                                     '/bin/uname -r',
+                                     r'(.*)')
+    
 
 def get_nvidia_driver_version(run_lambda):
     if get_platform() == 'darwin':
@@ -338,6 +345,7 @@ def get_env_info():
         rocm_version=get_rocm_version(run_lambda),
         miopen_version=get_miopen_version(run_lambda),
         vbios_versions=get_vbios_versions(run_lambda),
+        kernel_version=get_kernel_version(run_lambda),
     )
 
 # env_info_fmt = """
@@ -364,6 +372,7 @@ def get_env_info():
 env_info_fmt = """
 PyTorch version: {torch_version}
 OS: {os}
+Kernel: {kernel_version}
 VBIOS version: 
 {vbios_versions}
 ROCm version: {rocm_version}
