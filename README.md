@@ -1,4 +1,4 @@
-#### Collect ROCm ebvironmant paramters
+#### Collect ROCm environeant paramters
 
 This script outputs system environment info pertaining to ROCm
 Its inspired by PyTorch's own environment collection tool:
