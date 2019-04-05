@@ -150,11 +150,34 @@ def get_large_bar_status(run_lambda):
                                           'lspci | grep VGA',
                                           r'((?s).*)')
     # eliminate non gpu cards
-    lines = vga_list.split('\n')
-    lines = [line for line in lines if "Vega" in line]
-    buffer_1 = ''.join(['\t{}\n'.format(line) for line in lines])
-    return buffer_1
-    return lines
+    vega_list = vga_list.split('\n')
+    vega_list = [vega for vega in vega_list if "Vega" in vega]
+
+    # Get the region status
+    region_str_list = []
+    for vega in vega_list:
+        device_code = vega.split()[0]
+        region_str = run_and_parse_first_match(run_lambda,
+                                          'lspci -vvvs' + ' ' + device_code,
+                                          r'((?s).*)')
+        # Only show Region 0 line
+        lines = region_str.split('\n')
+        lines = [line for line in lines if "Region 0" in line]
+        
+        region_str_list.append(lines[0])
+
+    buffer = ''
+    for vega, region_str in zip(vega_list, region_str_list):
+        buffer += '\t{}\n \t{}\n'.format(vega, region_str)
+        # large bar enabled check
+        if len(region_str.split()[4]) == 11:
+            buffer += '\t\tLarge Bar Enabled\n'
+        else:
+            buffer += '\t\tLarge Bar DISABLED\n'
+        buffer += '\n'
+        
+    # return buffer_1 + buffer_2
+    return buffer
     
 
 def get_kernel_version(run_lambda):
