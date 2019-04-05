@@ -46,6 +46,7 @@ SystemEnv = namedtuple('SystemEnv', [
     'miopen_version',
     'vbios_versions',
     'kernel_version',
+    'large_bar_status',
 ])
 
 
@@ -144,6 +145,17 @@ def get_vbios_versions(run_lambda):
     buffer_2 = ''.join(['\t{}\n'.format(line) for line in lines[2 : 2 + total_gpus]])
     return buffer_1 + buffer_2
 
+def get_large_bar_status(run_lambda):
+    vga_list = run_and_parse_first_match(run_lambda,
+                                          'lspci | grep VGA',
+                                          r'((?s).*)')
+    # eliminate non gpu cards
+    lines = vga_list.split('\n')
+    lines = [line for line in lines if "Vega" in line]
+    buffer_1 = ''.join(['\t{}\n'.format(line) for line in lines])
+    return buffer_1
+    return lines
+    
 
 def get_kernel_version(run_lambda):
     return run_and_parse_first_match(run_lambda,
@@ -346,6 +358,7 @@ def get_env_info():
         miopen_version=get_miopen_version(run_lambda),
         vbios_versions=get_vbios_versions(run_lambda),
         kernel_version=get_kernel_version(run_lambda),
+        large_bar_status=get_large_bar_status(run_lambda),
     )
 
 # env_info_fmt = """
@@ -377,6 +390,8 @@ VBIOS version:
 {vbios_versions}
 ROCm version: {rocm_version}
 MIOpen version: {miopen_version}
+Large Bar status: 
+{large_bar_status}
 """.strip()
 
 
