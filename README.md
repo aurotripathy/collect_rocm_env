@@ -15,9 +15,13 @@ The expected output would be something like:
 
 <code>  
 Collecting environment information...
+        
 PyTorch version: 1.1.0a0+17232fb
+
 OS: Ubuntu 16.04.5 LTS
+
 Kernel: 4.20.0-rc3-kfd-compute-roc-master-9702
+
 VBIOS version:
         Total GPUs:4
         GPU[1]          : VBIOS version: 113-D0513100-004
@@ -26,7 +30,9 @@ VBIOS version:
         GPU[4]          : VBIOS version: 113-D0513100-004
 
 ROCm version: : 2.2.31
+
 MIOpen version: 1.7.1
+
 Large Bar status:
         23:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Vega 10 [Radeon Instinct MI25] (rev 01)
                 Region 0: Memory at 1a000000000 (64-bit, prefetchable) [size=16G]
