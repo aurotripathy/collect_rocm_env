@@ -9,7 +9,9 @@ import subprocess
 import sys
 import os
 from collections import namedtuple
-# from pudb import set_trace
+from pudb import set_trace
+import whichcraft
+
 try:
     import torch
     TORCH_AVAILABLE = True
@@ -49,6 +51,11 @@ SystemEnv = namedtuple('SystemEnv', [
     'large_bar_status',
 ])
 
+def is_tool_available(name):
+    """Check whether `name` is on PATH and marked as executable."""
+    from whichcraft import which
+    # from shutil import which
+    return which(name) is not None
 
 def run(command):
     """Returns (return-code, stdout, stderr)"""
@@ -146,6 +153,7 @@ def get_vbios_versions(run_lambda):
     return buffer_1 + buffer_2
 
 def get_large_bar_status(run_lambda):
+    set_trace()
     vga_list = run_and_parse_first_match(run_lambda,
                                           'lspci | grep VGA',
                                           r'((?s).*)')
