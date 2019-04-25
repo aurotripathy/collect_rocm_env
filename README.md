@@ -12,9 +12,8 @@ Run it with `python collect_rocm_env.py`.
 ##### Expected Output
 
 The expected output would be something like:
-<code>
-root@prj47-rack-40:/collect_rocm_env# python3.6 collect_rocm_env.py
-        
+
+<code>  
 Collecting environment information...
 
 PyTorch version: 1.1.0a0+1e42720
