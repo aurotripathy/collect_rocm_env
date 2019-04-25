@@ -10,7 +10,7 @@ import sys
 import os
 from collections import namedtuple
 from pudb import set_trace
-import whichcraft
+from utils.whichcraft import which
 
 try:
     import torch
@@ -53,8 +53,6 @@ SystemEnv = namedtuple('SystemEnv', [
 
 def is_tool_available(name):
     """Check whether `name` is on PATH and marked as executable."""
-    from whichcraft import which
-    # from shutil import which
     return which(name) is not None
 
 def run(command):
@@ -153,39 +151,44 @@ def get_vbios_versions(run_lambda):
     return buffer_1 + buffer_2
 
 def get_large_bar_status(run_lambda):
-    set_trace()
-    vga_list = run_and_parse_first_match(run_lambda,
-                                          'lspci | grep VGA',
-                                          r'((?s).*)')
-    # eliminate non gpu cards
-    vega_list = vga_list.split('\n')
-    vega_list = [vega for vega in vega_list if "Vega" in vega]
+    if is_tool_available("lspci"):
+        vga_list = run_and_parse_first_match(run_lambda,
+                                              'lspci | grep VGA',
+                                              r'((?s).*)')
+        # eliminate non gpu cards
+        vega_list = vga_list.split('\n')
+        vega_list = [vega for vega in vega_list if "Vega" in vega]
 
-    # Get the region status
-    region_str_list = []
-    for vega in vega_list:
-        device_code = vega.split()[0]
-        region_str = run_and_parse_first_match(run_lambda,
-                                          'lspci -vvvs' + ' ' + device_code,
-                                          r'((?s).*)')
-        # Only show Region 0 line
-        lines = region_str.split('\n')
-        lines = [line for line in lines if "Region 0" in line]
-        
-        region_str_list.append(lines[0])
+        # Get the region status
+        region_str_list = []
+        for vega in vega_list:
+            device_code = vega.split()[0]
+            region_str = run_and_parse_first_match(run_lambda,
+                                              'lspci -vvvs' + ' ' + device_code,
+                                              r'((?s).*)')
+            # Only show Region 0 line
+            lines = region_str.split('\n')
+            lines = [line for line in lines if "Region 0" in line]
 
-    buffer = ''
-    for vega, region_str in zip(vega_list, region_str_list):
-        buffer += '\t{}\n \t{}\n'.format(vega, region_str)
-        # large bar enabled check
-        if len(region_str.split()[4]) == 11:
-            buffer += '\t\tLarge Bar Enabled\n'
-        else:
-            buffer += '\t\tLarge Bar DISABLED\n'
-        buffer += '\n'
-        
-    # return buffer_1 + buffer_2
-    return buffer
+            region_str_list.append(lines[0])
+
+        buffer = ''
+        for vega, region_str in zip(vega_list, region_str_list):
+            buffer += '\t{}\n \t{}\n'.format(vega, region_str)
+            # large bar enabled check
+            if len(region_str.split()[4]) == 11:
+                buffer += '\t\tLarge Bar Enabled\n'
+            else:
+                buffer += '\t\tLarge Bar DISABLED\n'
+            buffer += '\n'
+
+        # return buffer_1 + buffer_2
+        return buffer
+    else:
+        buffer = """*** The lspci command is not available on your system/container.
+        It's needed for detecting Large Bar memeory.
+        Install pciutils to get the lspci commands."""
+        return buffer
     
 
 def get_kernel_version(run_lambda):
