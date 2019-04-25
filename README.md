@@ -40,4 +40,6 @@ ROCm version: : 2.2.31
 MIOpen version: 1.7.1
 
 #### Note
+
 The tool needs the unix command `lspci` to gather Large Bar memory status. 
+`lspci` can be easily installed with `apt install pciutils`
