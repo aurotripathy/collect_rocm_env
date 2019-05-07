@@ -16,7 +16,19 @@ try:
     TORCH_AVAILABLE = True
 except (ImportError, NameError, AttributeError):
     print("'import torch' gave an import error")
+    print("Checking fot TensorFlow environment")
     TORCH_AVAILABLE = False
+
+if TORCH_AVAILABLE:
+    pass
+else:
+    try:
+        import tensorflow as tf
+        TENSORFLOW_AVAILABLE = True
+    except (ImportError, NameError, AttributeError):
+        print("'import tensorflow' gave an import error")
+        TENSORFLOW_AVAILABLE = False
+
 
 PY3 = sys.version_info >= (3, 0)
 
@@ -184,9 +196,10 @@ def get_large_bar_status(run_lambda):
         # return buffer_1 + buffer_2
         return buffer
     else:
-        buffer = """*** The lspci command is not available on your system/container.
-        It's needed for detecting Large Bar memeory.
-        Install pciutils to get the lspci commands."""
+        buffer = """
+        *** Detecting the Larger Bar status needs the 'lspci' command.
+        *** The 'lspci' is not available in your system/container.
+        *** Install pciutils to get the lspci command."""
         return buffer
     
 
@@ -363,6 +376,8 @@ def get_env_info():
         debug_mode_str = torch.version.debug
         cuda_available_str = torch.cuda.is_available()
         cuda_version_str = torch.version.cuda
+    elif TENSORFLOW_AVAILABLE:
+        version_str = tf.__version__
     else:
         version_str = debug_mode_str = cuda_available_str = cuda_version_str = 'N/A'
 
