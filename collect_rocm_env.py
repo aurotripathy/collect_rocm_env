@@ -9,7 +9,6 @@ import subprocess
 import sys
 import os
 from collections import namedtuple
-from pudb import set_trace
 from utils.whichcraft import which
 
 try:
