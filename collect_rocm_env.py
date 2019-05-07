@@ -14,9 +14,10 @@ from utils.whichcraft import which
 try:
     import torch
     TORCH_AVAILABLE = True
+    print("Found a Pytorch environment")
 except (ImportError, NameError, AttributeError):
-    print("'import torch' gave an import error")
-    print("Checking fot TensorFlow environment")
+    print("*** Not a PyTorch environment. 'import torch' gave an import error")
+    print("Checking for TensorFlow environment...")
     TORCH_AVAILABLE = False
 
 if TORCH_AVAILABLE:
@@ -25,8 +26,9 @@ else:
     try:
         import tensorflow as tf
         TENSORFLOW_AVAILABLE = True
+        print("Found a Tensorflow environment")
     except (ImportError, NameError, AttributeError):
-        print("'import tensorflow' gave an import error")
+        print("***Not a Tensorflow environment. 'import tensorflow' gave an import error")
         TENSORFLOW_AVAILABLE = False
 
 
@@ -34,7 +36,7 @@ PY3 = sys.version_info >= (3, 0)
 
 # System Environment Information
 # SystemEnv = namedtuple('SystemEnv', [
-#     'torch_version',
+#     'framework_version',
 #     'is_debug_build',
 #     'cuda_compiled_version',
 #     'gcc_version',
@@ -53,7 +55,7 @@ PY3 = sys.version_info >= (3, 0)
 
 
 SystemEnv = namedtuple('SystemEnv', [
-    'torch_version',
+    'framework_version',
     'rocm_version',
     'os',
     'miopen_version',
@@ -382,7 +384,7 @@ def get_env_info():
         version_str = debug_mode_str = cuda_available_str = cuda_version_str = 'N/A'
 
     # return SystemEnv(
-    #     torch_version=version_str,
+    #     framework_version=version_str,
     #     is_debug_build=debug_mode_str,
     #     python_version='{}.{}'.format(sys.version_info[0], sys.version_info[1]),
     #     is_cuda_available=cuda_available_str,
@@ -400,7 +402,7 @@ def get_env_info():
     # )
 
     return SystemEnv(
-        torch_version=version_str,
+        framework_version=version_str,
         os=get_os(run_lambda),
         rocm_version=get_rocm_version(run_lambda),
         miopen_version=get_miopen_version(run_lambda),
@@ -410,7 +412,7 @@ def get_env_info():
     )
 
 # env_info_fmt = """
-# PyTorch version: {torch_version}
+# PyTorch version: {framework_version}
 # Is debug build: {is_debug_build}
 # CUDA used to build PyTorch: {cuda_compiled_version}
 
@@ -431,7 +433,7 @@ def get_env_info():
 # """.strip()
 
 env_info_fmt = """
-PyTorch version: {torch_version}
+Framework version: {framework_version}
 OS: {os}
 Kernel: {kernel_version}
 VBIOS version: 
