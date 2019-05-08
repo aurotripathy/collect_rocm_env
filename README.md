@@ -7,7 +7,7 @@ https://raw.githubusercontent.com/pytorch/pytorch/master/torch/utils/collect_env
 
 ##### Invocation
 
-Run it with `python collect_rocm_env.py`.
+Run it like so: `python collect_rocm_env.py`.
 
 ##### Expected Output
 
