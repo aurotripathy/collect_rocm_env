@@ -53,7 +53,7 @@ Large Bar status:
                 Large Bar Enabled
 </code>
 
-#### Note
+#### Dependency
 
 The tool needs the unix command `lspci` to gather Large Bar memory status. 
 `lspci` can be easily installed with `apt install pciutils`
