@@ -10,11 +10,11 @@ import sys
 import os
 from collections import namedtuple
 from utils.whichcraft import which
-
+from pudb import set_trace
 try:
     import torch
     TORCH_AVAILABLE = True
-    print("Found a Pytorch environment")
+    print("Found a PyTorch environment")
 except (ImportError, NameError, AttributeError):
     print("*** Not a PyTorch environment. 'import torch' gave an import error")
     print("Checking for TensorFlow environment...")
@@ -55,6 +55,7 @@ PY3 = sys.version_info >= (3, 0)
 
 
 SystemEnv = namedtuple('SystemEnv', [
+    'cpu_info',
     'framework_version',
     'rocm_version',
     'os',
@@ -133,6 +134,13 @@ def get_gcc_version(run_lambda):
 
 def get_cmake_version(run_lambda):
     return run_and_parse_first_match(run_lambda, 'cmake --version', r'cmake (.*)')
+
+def get_cpu_info(run_lambda):
+    output = run_and_read_all(run_lambda, 'cat /proc/cpuinfo')
+    set_trace()
+    output = output.split('\n')
+    formatted_out = '{}\n{}\n{}\n{}\n'.format(output[4], output[7], output[8], output[12], output[21])
+    return formatted_out
 
 def get_rocm_version(run_lambda):
     return run_and_parse_first_match(run_lambda, 'apt show rocm-libs', r'Version(.*)')
@@ -402,6 +410,7 @@ def get_env_info():
     # )
 
     return SystemEnv(
+        cpu_info=get_cpu_info(run_lambda),
         framework_version=version_str,
         os=get_os(run_lambda),
         rocm_version=get_rocm_version(run_lambda),
@@ -433,6 +442,7 @@ def get_env_info():
 # """.strip()
 
 env_info_fmt = """
+CPU Info: \n{cpu_info}
 Framework version: {framework_version}
 OS: {os}
 Kernel: {kernel_version}
