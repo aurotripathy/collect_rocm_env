@@ -181,7 +181,7 @@ def get_vbios_versions(run_lambda):
 def get_large_bar_status(run_lambda):
     if is_tool_available("lspci"):
         vga_list = run_and_parse_first_match(run_lambda,
-                                              'lspci | grep VGA',
+                                              'lspci | grep Vega',
                                               r'((?s).*)')
         # eliminate non gpu cards
         vega_list = vga_list.split('\n')
