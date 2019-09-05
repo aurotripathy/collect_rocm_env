@@ -56,6 +56,7 @@ PY3 = sys.version_info >= (3, 0)
 
 SystemEnv = namedtuple('SystemEnv', [
     'cpu_info',
+    'sys_mem_info',
     'framework_version',
     'rocm_version',
     'os',
@@ -137,10 +138,16 @@ def get_cmake_version(run_lambda):
 
 def get_cpu_info(run_lambda):
     output = run_and_read_all(run_lambda, 'cat /proc/cpuinfo')
-    set_trace()
     output = output.split('\n')
-    formatted_out = '{}\n{}\n{}\n{}\n'.format(output[4], output[7], output[8], output[12], output[21])
+    formatted_out = '\t{}\n\t{}\n\t{}\n\t{}\n'.format(output[4], output[7], output[8], output[12], output[21])
     return formatted_out
+
+def get_sys_mem_info(run_lambda):
+    output = run_and_read_all(run_lambda, 'cat /proc/meminfo')
+    output = output.split('\n')
+    formatted_out = '\t{}\n'.format(output[0])
+    return formatted_out
+
 
 def get_rocm_version(run_lambda):
     return run_and_parse_first_match(run_lambda, 'apt show rocm-libs', r'Version(.*)')
@@ -411,6 +418,7 @@ def get_env_info():
 
     return SystemEnv(
         cpu_info=get_cpu_info(run_lambda),
+        sys_mem_info=get_sys_mem_info(run_lambda),
         framework_version=version_str,
         os=get_os(run_lambda),
         rocm_version=get_rocm_version(run_lambda),
@@ -443,6 +451,7 @@ def get_env_info():
 
 env_info_fmt = """
 CPU Info: \n{cpu_info}
+System Memory Info:\n{sys_mem_info}
 Framework version: {framework_version}
 OS: {os}
 Kernel: {kernel_version}
