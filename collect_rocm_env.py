@@ -3,6 +3,9 @@
 # https://raw.githubusercontent.com/pytorch/pytorch/master/torch/utils/collect_env.py
 # Run it with `python collect_rocm_env.py`.
 
+
+# TODO cat /sys/class/dmi/id/board_vendor
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
 import subprocess
@@ -10,7 +13,7 @@ import sys
 import os
 from collections import namedtuple
 from utils.whichcraft import which
-from pudb import set_trace
+# from pudb import set_trace
 try:
     import torch
     TORCH_AVAILABLE = True
@@ -106,12 +109,12 @@ def run_and_parse_many_matches(run_lambda, command, regex):
     rc, out, _ = run_lambda(command)
     if rc != 0:
         return None
-    set_trace()
+    # set_trace()
     matches = re.search(regex, out)
     print(matches)
     if matches is None:
         return None
-    set_trace()
+    # set_trace()
     return match.group(1)
 
 
