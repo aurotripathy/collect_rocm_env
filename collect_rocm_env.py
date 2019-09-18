@@ -148,6 +148,7 @@ def get_cpu_info(run_lambda):
 
 def get_nproc_info(run_lambda):
     output = run_and_read_all(run_lambda, 'nproc')
+    output = output.strip('\n')
     return output
 
 def get_sys_mem_info(run_lambda):
@@ -461,7 +462,7 @@ def get_env_info():
 
 env_info_fmt = """
 CPU Info: \n{cpu_info}
-nproc Info: \n{nproc_info}
+nproc command output: {nproc_info}\n
 System Memory Info:\n{sys_mem_info}
 Framework version: {framework_version}
 OS: {os}
