@@ -4,8 +4,6 @@
 # Run it with `python collect_rocm_env.py`.
 
 
-# TODO cat /sys/class/dmi/id/board_vendor
-
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
 import subprocess
@@ -58,6 +56,7 @@ PY3 = sys.version_info >= (3, 0)
 
 
 SystemEnv = namedtuple('SystemEnv', [
+    'board_vendor',
     'cpu_info',
     'nproc_info',
     'sys_mem_info',
@@ -139,6 +138,12 @@ def get_gcc_version(run_lambda):
 
 def get_cmake_version(run_lambda):
     return run_and_parse_first_match(run_lambda, 'cmake --version', r'cmake (.*)')
+
+
+def get_board_vendor(run_lambda):
+    output = run_and_read_all(run_lambda, 'cat /sys/class/dmi/id/board_vendor')
+    return output
+
 
 def get_cpu_info(run_lambda):
     output = run_and_read_all(run_lambda, 'cat /proc/cpuinfo')
@@ -427,6 +432,7 @@ def get_env_info():
     # )
 
     return SystemEnv(
+        board_vendor=get_board_vendor(run_lambda),
         cpu_info=get_cpu_info(run_lambda),
         nproc_info=get_nproc_info(run_lambda),
         sys_mem_info=get_sys_mem_info(run_lambda),
@@ -461,6 +467,7 @@ def get_env_info():
 # """.strip()
 
 env_info_fmt = """
+Board Vendor: {board_vendor}
 CPU Info: \n{cpu_info}
 nproc command output: {nproc_info}\n
 System Memory Info:\n{sys_mem_info}
