@@ -59,6 +59,7 @@ PY3 = sys.version_info >= (3, 0)
 
 SystemEnv = namedtuple('SystemEnv', [
     'cpu_info',
+    'nproc_info',
     'sys_mem_info',
     'framework_version',
     'rocm_version',
@@ -145,6 +146,10 @@ def get_cpu_info(run_lambda):
     formatted_out = '\t{}\n\t{}\n\t{}\n\t{}\n'.format(output[4], output[7], output[8], output[12], output[21])
     return formatted_out
 
+def get_nproc_info(run_lambda):
+    output = run_and_read_all(run_lambda, 'nproc')
+    return output
+
 def get_sys_mem_info(run_lambda):
     output = run_and_read_all(run_lambda, 'cat /proc/meminfo')
     output = output.split('\n')
@@ -206,7 +211,8 @@ def get_large_bar_status(run_lambda):
         buffer = ''
         for vega, region_str in zip(vega_list, region_str_list):
             buffer += '\t{}\n \t{}\n'.format(vega, region_str)
-            # large bar enabled check
+            # Large bar enabled check.
+            # Count of digits that show up in the address for Region 0, should be 11
             if len(region_str.split()[4]) == 11:
                 buffer += '\t\tLarge Bar Enabled\n'
             else:
@@ -421,6 +427,7 @@ def get_env_info():
 
     return SystemEnv(
         cpu_info=get_cpu_info(run_lambda),
+        nproc_info=get_nproc_info(run_lambda),
         sys_mem_info=get_sys_mem_info(run_lambda),
         framework_version=version_str,
         os=get_os(run_lambda),
@@ -454,6 +461,7 @@ def get_env_info():
 
 env_info_fmt = """
 CPU Info: \n{cpu_info}
+nproc Info: \n{nproc_info}
 System Memory Info:\n{sys_mem_info}
 Framework version: {framework_version}
 OS: {os}
