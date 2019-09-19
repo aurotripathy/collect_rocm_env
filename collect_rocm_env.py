@@ -3,6 +3,10 @@
 # https://raw.githubusercontent.com/pytorch/pytorch/master/torch/utils/collect_env.py
 # Run it with `python collect_rocm_env.py`.
 
+# TODO find out the number of sockets
+# lscpu | grep 'Socket'
+# cat /proc/cpuinfo | grep "physical id" | sort -u | wc -l
+
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
