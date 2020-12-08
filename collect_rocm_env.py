@@ -16,13 +16,32 @@ import os
 from collections import namedtuple
 from utils.whichcraft import which
 # from pudb import set_trace
+
+# https://stackoverflow.com/questions/2918362/writing-string-to-a-file-on-a-new-line-every-time
+class cfile:
+    #subclass file to have a more convienient use of writeline
+    def __init__(self, name, mode = 'r'):
+        self.f = open(name, mode)
+
+    def wl(self, string):
+        self.f.writelines(string + '\n')
+
+    def done(self, string):
+        self.f.writelines(string + '\n')
+        self.f.close()
+        
+
+
+fid = cfile('/data/results/dummy.txt', 'w')
+
+
 try:
     import torch
     TORCH_AVAILABLE = True
-    print("Found a PyTorch environment")
+    fid.wl("Found a PyTorch environment")
 except (ImportError, NameError, AttributeError):
-    print("*** Not a PyTorch environment. 'import torch' gave an import error")
-    print("Checking for TensorFlow environment...")
+    fid.wl("*** Not a PyTorch environment. 'import torch' gave an import error")
+    fid.wl("Checking for TensorFlow environment...")
     TORCH_AVAILABLE = False
 
 if TORCH_AVAILABLE:
@@ -31,9 +50,9 @@ else:
     try:
         import tensorflow as tf
         TENSORFLOW_AVAILABLE = True
-        print("Found a Tensorflow environment")
+        fid.wl("Found a Tensorflow environment")
     except (ImportError, NameError, AttributeError):
-        print("***Not a Tensorflow environment. 'import tensorflow' gave an import error")
+        fid.wl("***Not a Tensorflow environment. 'import tensorflow' gave an import error")
         TENSORFLOW_AVAILABLE = False
 
 
@@ -115,7 +134,7 @@ def run_and_parse_many_matches(run_lambda, command, regex):
         return None
     # set_trace()
     matches = re.search(regex, out)
-    print(matches)
+    fid.wl(matches)
     if matches is None:
         return None
     # set_trace()
@@ -604,11 +623,10 @@ def get_pretty_env_info():
 
 
 def main():
-    print("Collecting environment information...")
+    fid.wl("Collecting environment information...")
     output = get_pretty_env_info()
-    print(output)
-    with open('/data/results/dummy.txt', 'w') as f:
-        f.write('Done!\n')
+    fid.wl(output)
+    fid.done('Done')
 
 
 if __name__ == '__main__':
