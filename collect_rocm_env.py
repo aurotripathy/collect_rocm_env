@@ -607,8 +607,8 @@ def main():
     print("Collecting environment information...")
     output = get_pretty_env_info()
     print(output)
-    with open('/data/results/dummy.txt') as f:
-        write('Done!')
+    with open('/data/results/dummy.txt', 'w') as f:
+        f.write('Done!\n')
 
 
 if __name__ == '__main__':
