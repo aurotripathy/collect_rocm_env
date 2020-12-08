@@ -15,10 +15,12 @@ import sys
 import os
 from collections import namedtuple
 from utils.whichcraft import which
+import argparse
 # from pudb import set_trace
 
 # https://stackoverflow.com/questions/2918362/writing-string-to-a-file-on-a-new-line-every-time
 class cfile:
+    """ append a line at the end of each string to print """
     #subclass file to have a more convienient use of writeline
     def __init__(self, name, mode = 'r'):
         self.f = open(name, mode)
@@ -30,9 +32,11 @@ class cfile:
         self.f.writelines(string + '\n')
         self.f.close()
         
-
-
-fid = cfile('/data/results/dummy.txt', 'w')
+parser = argparse.ArgumentParser(description='Collect the ROCm + App environment.')
+parser.add_argument('--out-file', required=True, type=str,
+                    help='The output file to write the nev to')
+args = parser.parse_args()
+fid = cfile(args.out_file, 'w')
 
 
 try:
